@@ -1,4 +1,146 @@
-// Statistics functionality for IP Status Tracker
+// System status update logic - runs on all pages
+(function() {
+  // Configuration
+  const config = {
+    refreshInterval: 60000, // 1 minute
+    retryInterval: 1000,    // 1 second
+    maxRetries: 5
+  };
+
+  // State
+  let retryCount = 0;
+  let refreshTimer = null;
+
+  // Load statistics from API
+  function loadStats() {
+    console.log('Loading statistics...');
+    
+    $.get('/api/system/status')
+      .done(function(data) {
+        console.log('Received statistics data:', data);
+        if (data && data.stats) {
+          updateStats(data.stats);
+          retryCount = 0; // Reset retry count on success
+        } else {
+          console.error('Invalid statistics data received:', data);
+          retry();
+        }
+      })
+      .fail(function(err) {
+        console.error('Failed to load statistics:', err);
+        retry();
+      });
+  }
+
+  // Update statistics display
+  function updateStats(stats) {
+    if (!stats) {
+      console.error('No statistics data received');
+      retry();
+      return;
+    }
+    
+    console.log('Updating statistics display with:', stats);
+    
+    try {
+      // Get all elements first
+      const elements = {
+        total: document.getElementById('total-hosts'),
+        up: document.getElementById('hosts-up'),
+        down: document.getElementById('hosts-down'),
+        unreachable: document.getElementById('hosts-unreachable')
+      };
+
+      // Check if all elements exist
+      const missingElements = Object.entries(elements)
+        .filter(([key, element]) => !element)
+        .map(([key]) => key);
+
+      if (missingElements.length > 0) {
+        console.error('Missing DOM elements:', missingElements);
+        retry();
+        return;
+      }
+
+      // Update the statistics display
+      elements.total.textContent = stats.total || 0;
+      elements.up.textContent = stats.up || 0;
+      elements.down.textContent = stats.down || 0;
+      elements.unreachable.textContent = stats.unreachable || 0;
+      
+      // Update page title with alert count if there are issues
+      const alertCount = (stats.down || 0) + (stats.unreachable || 0);
+      if (alertCount > 0) {
+        document.title = `(${alertCount}) IP Status Tracker - Dashboard`;
+      } else {
+        document.title = 'IP Status Tracker - Dashboard';
+      }
+      
+      // Log the final state
+      console.log('Statistics display updated:', {
+        total: elements.total.textContent,
+        up: elements.up.textContent,
+        down: elements.down.textContent,
+        unreachable: elements.unreachable.textContent
+      });
+    } catch (err) {
+      console.error('Error updating statistics display:', err);
+      retry();
+    }
+  }
+
+  // Retry loading statistics
+  function retry() {
+    if (retryCount < config.maxRetries) {
+      retryCount++;
+      console.log(`Retrying statistics load (${retryCount}/${config.maxRetries})...`);
+      setTimeout(loadStats, config.retryInterval);
+    } else {
+      console.error('Max retries reached, giving up');
+      retryCount = 0;
+    }
+  }
+
+  // Initialize when jQuery is available
+  function waitForJQuery(callback) {
+    if (window.jQuery) {
+      callback(window.jQuery);
+    } else {
+      setTimeout(function() {
+        waitForJQuery(callback);
+      }, 100);
+    }
+  }
+
+  // Setup statistics functionality
+  function setup() {
+    console.log('Setting up statistics...');
+    
+    // Initial load
+    loadStats();
+    
+    // Setup periodic refresh
+    refreshTimer = setInterval(loadStats, config.refreshInterval);
+    
+    // Cleanup on page unload
+    $(window).on('unload', function() {
+      if (refreshTimer) {
+        clearInterval(refreshTimer);
+      }
+    });
+  }
+
+  // Start the system status update
+  waitForJQuery(function($) {
+    console.log('jQuery found, initializing system status...');
+    setup();
+  });
+})();
+
+// Only run statistics page code if the stats charts exist
+if (document.getElementById('uptimeByGroupChart') && document.getElementById('downtimeEventsChart')) {
+  // Place all statistics page code inside this block
+
 (function() {
   // Configuration
   const config = {
@@ -55,6 +197,9 @@
   // Initialize when jQuery is available
   waitForJQuery(function($) {
     console.log('jQuery found, initializing statistics...');
+    
+    // Start checking for required elements
+    elementCheckTimer = setInterval(checkElements, config.elementCheckInterval);
     
     // Initialize date filters with default range (last 30 days)
     const today = new Date();
@@ -579,94 +724,6 @@
       }
     });
   }
+})();
 
-  // Load statistics from API
-  function loadStats() {
-    console.log('Loading statistics...');
-    
-    $.get('/api/system/status')
-      .done(function(data) {
-        console.log('Received statistics data:', data);
-        if (data && data.stats) {
-          updateStats(data.stats);
-          retryCount = 0; // Reset retry count on success
-        } else {
-          console.error('Invalid statistics data received:', data);
-          retry();
-        }
-      })
-      .fail(function(err) {
-        console.error('Failed to load statistics:', err);
-        retry();
-      });
-  }
-
-  // Update statistics display
-  function updateStats(stats) {
-    if (!stats) {
-      console.error('No statistics data received');
-      retry();
-      return;
-    }
-    
-    console.log('Updating statistics display with:', stats);
-    
-    try {
-      // Get all elements first
-      const elements = {
-        total: document.getElementById('total-hosts'),
-        up: document.getElementById('hosts-up'),
-        down: document.getElementById('hosts-down'),
-        unreachable: document.getElementById('hosts-unreachable')
-      };
-
-      // Check if all elements exist
-      const missingElements = Object.entries(elements)
-        .filter(([key, element]) => !element)
-        .map(([key]) => key);
-
-      if (missingElements.length > 0) {
-        console.error('Missing DOM elements:', missingElements);
-        retry();
-        return;
-      }
-
-      // Update the statistics display
-      elements.total.textContent = stats.total || 0;
-      elements.up.textContent = stats.up || 0;
-      elements.down.textContent = stats.down || 0;
-      elements.unreachable.textContent = stats.unreachable || 0;
-      
-      // Update page title with alert count if there are issues
-      const alertCount = (stats.down || 0) + (stats.unreachable || 0);
-      if (alertCount > 0) {
-        document.title = `(${alertCount}) IP Status Tracker - Dashboard`;
-      } else {
-        document.title = 'IP Status Tracker - Dashboard';
-      }
-      
-      // Log the final state
-      console.log('Statistics display updated:', {
-        total: elements.total.textContent,
-        up: elements.up.textContent,
-        down: elements.down.textContent,
-        unreachable: elements.unreachable.textContent
-      });
-    } catch (err) {
-      console.error('Error updating statistics display:', err);
-      retry();
-    }
-  }
-
-  // Retry loading statistics
-  function retry() {
-    if (retryCount < config.maxRetries) {
-      retryCount++;
-      console.log(`Retrying statistics load (${retryCount}/${config.maxRetries})...`);
-      setTimeout(loadStats, config.retryInterval);
-    } else {
-      console.error('Max retries reached, giving up');
-      retryCount = 0;
-    }
-  }
-})(); 
+} 
