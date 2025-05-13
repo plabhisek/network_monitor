@@ -1,0 +1,92 @@
+<div class="row">
+  <div class="col-12 mb-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">System Statistics</h5>
+        <div class="input-group date-filter" style="width: auto;">
+          <span class="input-group-text">Date Range</span>
+          <input type="date" class="form-control" id="stats-from">
+          <span class="input-group-text">to</span>
+          <input type="date" class="form-control" id="stats-to">
+          <button class="btn btn-outline-secondary" id="apply-stats-filter">
+            <i class="fas fa-filter"></i> Apply
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <h5>Uptime by Group</h5>
+            <div class="chart-container" style="position: relative; height: 300px;">
+              <canvas id="uptimeByGroupChart"></canvas>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <h5>Downtime Events</h5>
+            <div class="chart-container" style="position: relative; height: 300px;">
+              <canvas id="downtimeEventsChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12 mb-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">Downtime Report</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Host</th>
+                <th>Group</th>
+                <th>Downtime Count</th>
+                <th>Total Downtime</th>
+                <th>Availability %</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="downtime-report-table">
+              <tr>
+                <td colspan="6" class="text-center">Loading data...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12 mb-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">Response Time Report</h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="input-group">
+              <label class="input-group-text" for="response-host-select">Host:</label>
+              <select class="form-select" id="response-host-select">
+                <option value="">Select a host</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div id="response-time-chart-container">
+          <p class="text-center text-muted">Select a host to view response time data</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/stats.js"></script>

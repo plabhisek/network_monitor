@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP Status Tracker</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="active">
+      <div class="sidebar-header">
+        <h3>IP Status Tracker</h3>
+      </div>
+
+      <ul class="list-unstyled components">
+        <li class="{{#if (eq active 'dashboard')}}active{{/if}}">
+          <a href="/">
+            <i class="fas fa-tachometer-alt"></i>
+            Dashboard
+          </a>
+        </li>
+        <li class="{{#if (eq active 'hosts')}}active{{/if}}">
+          <a href="/hosts">
+            <i class="fas fa-server"></i>
+            Hosts
+          </a>
+        </li>
+        <li class="{{#if (eq active 'stats')}}active{{/if}}">
+          <a href="/stats">
+            <i class="fas fa-chart-line"></i>
+            Statistics
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Page Content -->
+    <div id="content">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary">
+            <i class="fas fa-align-left"></i>
+            <span>Toggle Sidebar</span>
+          </button>
+          
+          <div class="d-flex align-items-center">
+            <div class="status-indicator me-3">
+              <span id="monitoringStatus" class="badge bg-success">
+                <i class="fas fa-circle-notch fa-spin"></i> Monitoring Active
+              </span>
+            </div>
+            <div class="dropdown">
+              <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="systemActions" data-bs-toggle="dropdown" aria-expanded="false">
+                System
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="systemActions">
+                <li><a class="dropdown-item" href="#" id="startMonitoring">Start Monitoring</a></li>
+                <li><a class="dropdown-item" href="#" id="stopMonitoring">Stop Monitoring</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" id="runCleanup">Run Data Cleanup</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main class="container-fluid">
+        {{{body}}}
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+  <!-- Load dependencies -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.min.js"></script>
+  
+  <!-- Load page-specific scripts -->
+  {{#if (eq active 'dashboard')}}
+  <script src="/js/stats.js"></script>
+  <script src="/js/dashboard.js"></script>
+  {{/if}}
+  {{#if (eq active 'hosts')}}
+  <script src="/js/hosts.js"></script>
+  {{/if}}
+  
+  <!-- Common scripts -->
+  <script>
+    // Sidebar toggle
+    $(document).ready(function () {
+      $('#sidebarCollapse').on('click', function () {
+        $('#sidebar').toggleClass('active');
+      });
+      
+      // System action handlers
+      $('#startMonitoring').on('click', function(e) {
+        e.preventDefault();
+        $.post('/api/system/monitor/start')
+          .done(function() {
+            $('#monitoringStatus').removeClass('bg-danger').addClass('bg-success')
+              .html('<i class="fas fa-circle-notch fa-spin"></i> Monitoring Active');
+            showAlert('success', 'Monitoring started successfully');
+          })
+          .fail(function() {
+            showAlert('danger', 'Failed to start monitoring');
+          });
+      });
+      
+      $('#stopMonitoring').on('click', function(e) {
+        e.preventDefault();
+        $.post('/api/system/monitor/stop')
+          .done(function() {
+            $('#monitoringStatus').removeClass('bg-success').addClass('bg-danger')
+              .html('<i class="fas fa-stop-circle"></i> Monitoring Stopped');
+            showAlert('warning', 'All monitoring stopped');
+          })
+          .fail(function() {
+            showAlert('danger', 'Failed to stop monitoring');
+          });
+      });
+      
+      $('#runCleanup').on('click', function(e) {
+        e.preventDefault();
+        $.post('/api/system/cleanup')
+          .done(function(data) {
+            showAlert('success', `Data cleanup completed: ${data.result.statusCount} status entries and ${data.result.downtimeCount} downtime entries removed`);
+          })
+          .fail(function() {
+            showAlert('danger', 'Failed to run cleanup');
+          });
+      });
+      
+      // Check monitoring status on page load
+      $.get('/api/system/status')
+        .done(function(data) {
+          if (data.stats.down > 0) {
+            $('#monitoringStatus').removeClass('bg-success').addClass('bg-warning')
+              .html(`<i class="fas fa-exclamation-triangle"></i> ${data.stats.down} Host${data.stats.down > 1 ? 's' : ''} Down`);
+          }
+        });
+    });
+    
+    // Alert helper function
+    function showAlert(type, message, timeout = 3000) {
+      const alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      `;
+      
+      const alertElement = $(alertHtml);
+      $('main').prepend(alertElement);
+      
+      setTimeout(() => {
+        alertElement.alert('close');
+      }, timeout);
+    }
+  </script>
+</body>
+</html>

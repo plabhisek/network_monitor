@@ -1,0 +1,241 @@
+/* Main layout styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  overflow-x: hidden;
+}
+
+.wrapper {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
+
+#sidebar {
+  min-width: 250px;
+  max-width: 250px;
+  background: #343a40;
+  color: #fff;
+  transition: all 0.3s;
+}
+
+#sidebar.active {
+  margin-left: -250px;
+}
+
+#sidebar .sidebar-header {
+  padding: 20px;
+  background: #212529;
+}
+
+#sidebar ul.components {
+  padding: 20px 0;
+  border-bottom: 1px solid #47748b;
+}
+
+#sidebar ul p {
+  color: #fff;
+  padding: 10px;
+}
+
+#sidebar ul li a {
+  padding: 10px;
+  font-size: 1em;
+  display: block;
+  color: #fff;
+  text-decoration: none;
+}
+
+#sidebar ul li a:hover {
+  color: #fff;
+  background: #6c757d;
+}
+
+#sidebar ul li.active > a {
+  color: #fff;
+  background: #007bff;
+}
+
+/* Icon spacing */
+#sidebar ul li a i {
+  margin-right: 10px;
+}
+
+#content {
+  width: 100%;
+  min-height: 100vh;
+  transition: all 0.3s;
+}
+
+/* Card styles */
+.card {
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  border-bottom: 0;
+  background-color: transparent;
+  padding: 15px 20px;
+}
+
+/* Status indicators */
+.status-badge {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.status-up {
+  background-color: #28a745;
+}
+
+.status-down {
+  background-color: #dc3545;
+}
+
+.status-unreachable {
+  background-color: #ffc107;
+}
+
+.status-unknown {
+  background-color: #6c757d;
+}
+
+/* Table styling */
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  font-weight: 600;
+  border-top: none;
+}
+
+/* Responsive media queries */
+@media (max-width: 768px) {
+  #sidebar {
+    margin-left: -250px;
+  }
+  #sidebar.active {
+    margin-left: 0;
+  }
+  #sidebarCollapse span {
+    display: none;
+  }
+}
+
+/* Animation for loading states */
+.loading-spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  vertical-align: text-bottom;
+  border: 0.2em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
+}
+
+/* Charts container */
+.chart-container {
+  position: relative;
+  height: 300px;
+}
+
+/* Time period filter */
+.date-filter {
+  max-width: 500px;
+}
+
+/* Host details */
+#host-details-table td:first-child {
+  font-weight: bold;
+  width: 40%;
+}
+
+/* Status history styles */
+.status-history-item {
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+/* Dashboard status cards */
+#status-overview .card {
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+#status-overview .card:hover {
+  transform: translateY(-5px);
+}
+
+/* Form controls */
+.form-label {
+  font-weight: 500;
+}
+
+/* Modal styles */
+.modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+/* Error pages custom styling */
+
+/* Common error page styling */
+.error-icon {
+  margin: 2rem 0;
+}
+
+/* 404 page styling */
+.text-warning {
+  color: #ffc107 !important;
+}
+
+/* 500 error page styling */
+.text-danger {
+  color: #dc3545 !important;
+}
+
+/* Error stack trace styling */
+.error-stack {
+  background-color: #f8f9fa;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: #666;
+  text-align: left;
+  overflow-x: auto;
+  max-height: 400px;
+}
+
+/* Loading overlay styles */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.card-body {
+  position: relative;
+}

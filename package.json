@@ -1,0 +1,37 @@
+{
+  "name": "ip-status-tracker",
+  "version": "1.0.0",
+  "description": "IP Status Tracking Web Application using SNMP",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "mocha tests/"
+  },
+  "keywords": [
+    "ip",
+    "monitoring",
+    "snmp",
+    "network"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-handlebars": "^7.0.7",
+    "helmet": "^7.0.0",
+    "lru-cache": "^9.1.1",
+    "mongoose": "^7.1.0",
+    "morgan": "^1.10.0",
+    "net-snmp": "^3.9.0",
+    "node-cron": "^3.0.2",
+    "ping": "^0.4.4",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.22"
+  }
+}

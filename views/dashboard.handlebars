@@ -1,0 +1,105 @@
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">System Status</h5>
+        <div class="row" id="status-overview">
+          <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Total Hosts</h6>
+                <h2 id="total-hosts">-</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Hosts Up</h6>
+                <h2 id="hosts-up">-</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="card bg-danger text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Hosts Down</h6>
+                <h2 id="hosts-down">-</h2>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+              <div class="card-body text-center">
+                <h6 class="card-title">Unreachable</h6>
+                <h2 id="hosts-unreachable">-</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6 mb-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">Hosts Status</h5>
+      </div>
+      <div class="card-body">
+        <div id="chart-container" style="height: 300px;">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 mb-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">Latest Downtimes</h5>
+      </div>
+      <div class="card-body">
+        <div id="latest-events" class="list-group list-group-flush" style="height: 300px; overflow-y: auto;">
+          <div class="text-center p-4">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12 mb-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Problem Hosts</h5>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="refresh-problems">
+            <i class="fas fa-sync-alt"></i> Refresh
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="down-hosts-list">
+          <div class="text-center p-4">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12 mb-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white">
+        <h5 class="card-title mb-0">Hosts by Group</h5>
+      </div>
+      <div class="card-body">
+        <div class="row" id="hosts-by-group">
+          <div class="col-12 text-center p-4">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
